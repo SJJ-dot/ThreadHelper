@@ -9,7 +9,7 @@ import sjj.schedule.BuildConfig;
  */
 
 public class LogUtils {
-    private static boolean enable = BuildConfig.DEBUG;
+    private static boolean enable = true;
     private static final int DEBUG = 0;
     private static final int INFO = 1;
     private static final int WARN = 2;
@@ -69,7 +69,7 @@ public class LogUtils {
     }
 
     private static void log(int lev, String tag, String message) {
-        if (!enable && lev < LogUtils.lev) return;
+        if (!enable | lev < LogUtils.lev) return;
         switch (lev) {
             case DEBUG:
                 Log.d(tag, message);
@@ -87,7 +87,7 @@ public class LogUtils {
     }
 
     private static void log(int lev, String tag, String message, Throwable throwable) {
-        if (!enable && lev < LogUtils.lev) return;
+        if (!enable | lev < LogUtils.lev) return;
         if (throwable == null) {
             log(lev, tag, message);
         } else {
