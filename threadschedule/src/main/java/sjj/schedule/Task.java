@@ -5,5 +5,5 @@ package sjj.schedule;
  */
 
 public interface Task<R,P> {
-    R run(P p);
+    R run(Disposable disposable, P p);
 }

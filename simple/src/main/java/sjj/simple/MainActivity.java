@@ -2,13 +2,11 @@ package sjj.simple;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 
-import java.util.Date;
-
-import sjj.schedule.LogUtils;
+import sjj.schedule.Disposable;
+import sjj.schedule.utils.LogUtils;
 import sjj.schedule.Task;
-import sjj.schedule.ThreadHelper;
+import sjj.schedule.helper.ThreadHelper;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -18,26 +16,54 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         new ThreadHelper<>("aa").post(new Task<Integer, String>() {
             @Override
-            public Integer run(String s) {
-                LogUtils.e("---------------"+s+" ========= "+Thread.currentThread().getName());
+            public Integer run(Disposable disposable, String s) {
+                LogUtils.e("-1-1-------------"+s+" ========= "+Thread.currentThread().getName());
                 return 1234;
             }
         }).post(new Task<String, Integer>() {
             @Override
-            public String run(Integer integer) {
-                LogUtils.e(integer+" ======== "+Thread.currentThread().getName());
+            public String run(Disposable disposable, Integer integer) {
+                disposable.stop();
+                LogUtils.e("-1-2------------"+integer+" ======== "+Thread.currentThread().getName());
                 return 12345+"str";
             }
         }).ui(new Task<String, String>() {
             @Override
-            public String run(String s) {
-                LogUtils.e(s+" ======== "+Thread.currentThread().getName());
+            public String run(Disposable disposable, String s) {
+                LogUtils.e("-1-3------------"+s+" ======== "+Thread.currentThread().getName());
                 return "ui next";
             }
         }).post(new Task<Object, String>() {
             @Override
-            public Object run(String s) {
-                LogUtils.e(s+" ======== "+Thread.currentThread().getName());
+            public Object run(Disposable disposable, String s) {
+                LogUtils.e("-1-4------------"+s+" ======== "+Thread.currentThread().getName());
+                return null;
+            }
+        }).run();
+
+        Disposable disposable = new ThreadHelper<>("aa2").post(new Task<Integer, String>() {
+            @Override
+            public Integer run(Disposable disposable, String s) {
+                LogUtils.e("-2-1-------------" + s + " ========= " + Thread.currentThread().getName());
+                return 1234;
+            }
+        }).post(new Task<String, Integer>() {
+            @Override
+            public String run(Disposable disposable, Integer integer) {
+                LogUtils.e("-2-2------------" + integer + " ======== " + Thread.currentThread().getName());
+                return 12345 + "str";
+            }
+        }).ui(new Task<String, String>() {
+            @Override
+            public String run(Disposable disposable, String s) {
+                disposable.stop();
+                LogUtils.e("-2-3------------" + s + " ======= " + Thread.currentThread().getName());
+                return "ui next";
+            }
+        }).post(new Task<Object, String>() {
+            @Override
+            public Object run(Disposable disposable, String s) {
+                LogUtils.e("-2-4------------" + s + " ======== " + Thread.currentThread().getName());
                 return null;
             }
         }).run();

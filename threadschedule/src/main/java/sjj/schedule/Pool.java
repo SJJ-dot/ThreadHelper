@@ -15,15 +15,15 @@ public class Pool {
     private static ScheduledExecutorService executorService = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors() * 2);
     private static Handler handler = new Handler(Looper.getMainLooper());
 
-    static void post(Runnable runnable) {
+    public static void post(Runnable runnable) {
         handler.post(runnable);
     }
 
-    static void cancel(Runnable runnable) {
+    public static void cancel(Runnable runnable) {
         handler.removeCallbacks(runnable);
     }
 
-    static Future run(Runnable runnable) {
+    public static Future run(Runnable runnable) {
         return executorService.submit(runnable);
     }
 
