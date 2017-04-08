@@ -8,7 +8,7 @@ import sjj.schedule.Task;
  * Created by SJJ on 2017/3/12.
  */
 
-public class ThreadHelper<T> implements Disposable {
+public class ThreadHelper<T> {
     private ThreadHelper<T> originalHelper;
     protected ThreadHelper next;
     private T object;
@@ -52,25 +52,25 @@ public class ThreadHelper<T> implements Disposable {
     public Disposable run() {
         ThreadHelper originalHelper = getOriginalHelper();
         originalHelper.run(originalHelper.object);
-        return this;
+        return disposable;
     }
 
-    protected void disable() {
+    protected void stop() {
 
     }
-
-    @Override
-    public void stop() {
-        interrupt(this);
-    }
-
     private void interrupt(ThreadHelper helper) {
         if (helper == null) {
             return;
         }
         helper.next = null;
         helper.enable = false;
-        helper.disable();
+        helper.stop();
         interrupt(helper.originalHelper);
     }
+    protected Disposable disposable = new Disposable() {
+        @Override
+        public void stop() {
+            interrupt(ThreadHelper.this);
+        }
+    };
 }

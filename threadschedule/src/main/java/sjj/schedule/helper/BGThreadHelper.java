@@ -27,7 +27,7 @@ class BGThreadHelper<T> extends ThreadHelper<T> {
         future = Pool.run(new Runnable() {
             @Override
             public void run() {
-                Object o1 = task.run(BGThreadHelper.this,o);
+                Object o1 = task.run(disposable,o);
                 ThreadHelper next = BGThreadHelper.this.next;
                 if (next != null) {
                     next.run(o1);
@@ -37,7 +37,7 @@ class BGThreadHelper<T> extends ThreadHelper<T> {
     }
 
     @Override
-    protected void disable() {
+    protected void stop() {
         if (future != null) {
             future.cancel(true);
             future = null;

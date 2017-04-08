@@ -22,7 +22,7 @@ class UIThreadHelper<T> extends ThreadHelper<T> {
             runnable = new Runnable() {
                 @Override
                 public void run() {
-                    Object run = task.run(UIThreadHelper.this,o);
+                    Object run = task.run(disposable,o);
                     ThreadHelper next = UIThreadHelper.this.next;
                     if (next != null) {
                         next.run(run);
@@ -35,7 +35,7 @@ class UIThreadHelper<T> extends ThreadHelper<T> {
     }
 
     @Override
-    protected void disable() {
+    protected void stop() {
         if (runnable != null)
             Pool.cancel(runnable);
     }
