@@ -1,5 +1,6 @@
 package sjj.schedule.helper;
 
+import sjj.schedule.OnErrorListener;
 import sjj.schedule.Pool;
 import sjj.schedule.Task;
 
@@ -17,15 +18,21 @@ class UIThreadHelper<T> extends ThreadHelper<T> {
     }
 
     @Override
-    void run(final Object o) {
+    void execute(final Object o, final OnErrorListener listener) {
         if (enable) {
             runnable = new Runnable() {
                 @Override
                 public void run() {
-                    Object run = task.run(disposable,o);
-                    ThreadHelper next = UIThreadHelper.this.next;
-                    if (next != null) {
-                        next.run(run);
+                    try {
+                        Object run = task.run(disposable,o);
+                        ThreadHelper next = UIThreadHelper.this.next;
+                        if (next != null) {
+                            next.execute(run,listener);
+                        }
+                    } catch (Throwable e) {
+                        if (listener != null) {
+                            listener.onError(e);
+                        }
                     }
                 }
             };

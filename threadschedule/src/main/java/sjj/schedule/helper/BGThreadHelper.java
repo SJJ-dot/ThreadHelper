@@ -2,6 +2,7 @@ package sjj.schedule.helper;
 
 import java.util.concurrent.Future;
 
+import sjj.schedule.OnErrorListener;
 import sjj.schedule.Pool;
 import sjj.schedule.Task;
 
@@ -23,14 +24,25 @@ class BGThreadHelper<T> extends ThreadHelper<T> {
     }
 
     @Override
-    void run(final Object o) {
-        future = Pool.run(new Runnable() {
+    void execute(final Object object, final OnErrorListener listener) {
+        future = Pool.submit(new Runnable() {
             @Override
             public void run() {
-                Object o1 = task.run(disposable,o);
-                ThreadHelper next = BGThreadHelper.this.next;
-                if (next != null) {
-                    next.run(o1);
+                try {
+                    Object o1 = task.run(disposable,object);
+                    ThreadHelper next = BGThreadHelper.this.next;
+                    if (next != null) {
+                        next.execute(o1,listener);
+                    }
+                } catch (final Exception e) {
+                    if (listener != null) {
+                        Pool.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onError(e);
+                            }
+                        });
+                    }
                 }
             }
         });

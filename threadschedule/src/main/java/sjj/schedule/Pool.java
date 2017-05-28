@@ -25,7 +25,7 @@ public class Pool {
         handler.removeCallbacks(runnable);
     }
 
-    public static Future run(Runnable runnable) {
+    public static Future submit(Runnable runnable) {
         return executorService.submit(runnable);
     }
 

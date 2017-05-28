@@ -2,6 +2,7 @@ package sjj.schedule.helper;
 
 
 import sjj.schedule.Disposable;
+import sjj.schedule.OnErrorListener;
 import sjj.schedule.Task;
 
 /**
@@ -26,11 +27,11 @@ public class ThreadHelper<T> {
         threadHelper.next = this;
     }
 
-    public <R> ThreadHelper<R> post(Task<R, T> task) {
+    public <R> ThreadHelper<R> submit(Task<R, T> task) {
         return new BGThreadHelper<>(this, task);
     }
 
-    public <R> ThreadHelper<R> ui(Task<R, T> task) {
+    public <R> ThreadHelper<R> post(Task<R, T> task) {
         return new UIThreadHelper<>(this, task);
     }
 
@@ -42,17 +43,20 @@ public class ThreadHelper<T> {
     }
 
 
-    void run(Object o) {
+    void execute(Object object, OnErrorListener listener) {
         ThreadHelper next = this.next;
         if (next != null && enable) {
-            next.run(o);
+            next.execute(object, listener);
         }
     }
 
-    public Disposable run() {
+    public Disposable run(OnErrorListener listener) {
         ThreadHelper originalHelper = getOriginalHelper();
-        originalHelper.run(originalHelper.object);
+        originalHelper.execute(originalHelper.object,listener);
         return disposable;
+    }
+    public Disposable run() {
+        return run(null);
     }
 
     protected void stop() {
